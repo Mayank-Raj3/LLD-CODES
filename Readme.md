@@ -134,11 +134,121 @@ public class Main {
 - **Flexibility**: Changes in notification logic or database storage can be made without affecting the `User` class.
 - **Easier Testing**: Each class can be tested independently, making unit tests simpler and more focused.
 
-# Open-closed Principle (OCP)
- 
 
+# Open/Closed Principle (OCP) 
 
+The **Open/Closed Principle (OCP)** is one of the SOLID principles of object-oriented design. It states that:
 
+**"Software entities (classes, modules, functions, etc.) should be open for extension but closed for modification."**
+
+This means that we should be able to extend a class's behavior without modifying its existing code. Below, we will explore both a **bad implementation** that violates OCP and a **good implementation** that adheres to it.
+
+## Bad Implementation (Violates OCP)
+
+In this example, the `DiscountCalculator` class violates the OCP because every time a new discount type is added, the class must be modified. This makes the class hard to maintain and susceptible to bugs.
+
+```java
+class DiscountCalculator {
+    public double calculateDiscount(String customerType, double amount) {
+        if (customerType.equals("Regular")) {
+            return amount * 0.1; // 10% discount for regular customers
+        } else if (customerType.equals("VIP")) {
+            return amount * 0.2; // 20% discount for VIP customers
+        } else if (customerType.equals("Employee")) {
+            return amount * 0.3; // 30% discount for employees
+        } else {
+            return 0;
+        }
+    }
+}
+```
+
+### Why This Is Bad:
+- **Modification**: Every time a new customer type is introduced (e.g., a "Student" or "Affiliate"), the `DiscountCalculator` class must be changed.
+- **Brittle Code**: Changing the code repeatedly makes it prone to errors.
+- **Violation of OCP**: The class is not closed for modification, as we have to modify it for each new feature.
+
+## Good Implementation (Follows OCP)
+
+In this refactored version, the `DiscountCalculator` class adheres to OCP by introducing an abstract `Customer` class with specific discount logic for each type of customer. This way, adding new customer types only requires creating a new class, without modifying the existing ones.
+
+```java
+// Abstract class or interface to represent a Customer
+abstract class Customer {
+    public abstract double getDiscount(double amount);
+}
+
+// Concrete implementations for each customer type
+class RegularCustomer extends Customer {
+    @Override
+    public double getDiscount(double amount) {
+        return amount * 0.1; // 10% discount for regular customers
+    }
+}
+
+class VipCustomer extends Customer {
+    @Override
+    public double getDiscount(double amount) {
+        return amount * 0.2; // 20% discount for VIP customers
+    }
+}
+
+class EmployeeCustomer extends Customer {
+    @Override
+    public double getDiscount(double amount) {
+        return amount * 0.3; // 30% discount for employees
+    }
+}
+
+// DiscountCalculator class is open for extension but closed for modification
+class DiscountCalculator {
+    public double calculateDiscount(Customer customer, double amount) {
+        return customer.getDiscount(amount);
+    }
+}
+```
+
+### Why This Is Good:
+- **Closed for Modification**: The `DiscountCalculator` class is now closed for modification. We no longer need to modify it when a new customer type is added.
+- **Open for Extension**: If a new customer type (e.g., `StudentCustomer`) needs to be added, we can simply create a new class that extends `Customer` without changing existing code.
+- **Scalable**: The design is now more flexible, allowing easy extensions with minimal risk of breaking existing functionality.
+
+### Adding a New Customer Type (Extension without Modification)
+
+If we need to add a new customer type, like a **StudentCustomer**, we simply create a new class that extends `Customer`:
+
+```java
+class StudentCustomer extends Customer {
+    @Override
+    public double getDiscount(double amount) {
+        return amount * 0.15; // 15% discount for students
+    }
+}
+```
+
+No changes are required in the `DiscountCalculator` class. We just use the new class:
+
+```java
+public class Main {
+    public static void main(String[] args) {
+        DiscountCalculator calculator = new DiscountCalculator();
+        
+        Customer regular = new RegularCustomer();
+        Customer vip = new VipCustomer();
+        Customer student = new StudentCustomer();
+        
+        System.out.println("Regular Discount: " + calculator.calculateDiscount(regular, 100));
+        System.out.println("VIP Discount: " + calculator.calculateDiscount(vip, 100));
+        System.out.println("Student Discount: " + calculator.calculateDiscount(student, 100));
+    }
+}
+```
+
+## Conclusion
+
+By following OCP:
+- We avoid modifying existing, tested code, reducing the chances of introducing bugs.
+- We make the system more scalable, as new features can be added easily by extending the functionality.
 
 
 
