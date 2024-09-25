@@ -1,4 +1,4 @@
-package SingleResponsibilityPrinciple.Backend_Example.GoodCode;
+package P1_SingleResponsibilityPrinciple.Backend_Example.GoodCode;
 
 public class CalculateSalary {
     public double calculateSalary() {
