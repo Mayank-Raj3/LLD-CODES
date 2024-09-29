@@ -394,3 +394,316 @@ The Liskov Substitution Principle ensures that a subclass can replace its superc
 
 
 
+# 4. Interface Segregation Principle (ISP)
+
+The **Interface Segregation Principle (ISP)** is one of the SOLID design principles in object-oriented programming. It states that no client should be forced to depend on interfaces it does not use. In simpler terms, it's better to create multiple small, specific interfaces rather than one large, general-purpose interface that contains methods not all clients will need.
+
+## Formal Definition
+
+The principle was introduced by Robert C. Martin, and it can be defined as:
+
+> *“Clients should not be forced to depend on methods they do not use.”*
+
+This principle promotes the creation of highly cohesive and focused interfaces that cater specifically to the needs of the clients using them.
+
+## Why Follow ISP?
+
+In systems that violate the Interface Segregation Principle, classes may end up depending on interfaces that include methods they don't need, leading to unnecessary complexity, code bloat, and a fragile design. By following ISP, each client is only exposed to the methods that are relevant to its role, resulting in cleaner, more maintainable code.
+
+### Example of a Violation (Problematic Code)
+
+In the provided example, the `User` interface has several methods:
+
+```java
+public interface User {
+
+    boolean canBuyProducts();
+
+    boolean canModifyProducts();
+
+    boolean canAddProducts();
+
+    boolean canApproveProducts();
+
+    void approveProduct();
+}
+```
+
+Here, the `User` interface tries to cater to different types of users: **admin**, **buyer**, and **seller**. However, not all users need all the methods:
+
+- **Admin** can do everything (buy, modify, add, approve products).
+- **Buyer** can only buy products.
+- **Seller** can add, modify, and buy products, but they don’t approve products.
+
+### Problems with This Design:
+
+- **Interface Bloat**: The interface `User` includes methods that certain classes may not need. For example, a **buyer** should not need to implement `canModifyProducts()`, `canAddProducts()`, or `approveProduct()`, because a buyer does not perform these actions.
+- **Violation of ISP**: By forcing all user types to implement a general-purpose interface, we are violating the Interface Segregation Principle, which leads to unnecessary implementation of methods and potential misuse.
+- **Violation of LSP**: In a scenario where a `Buyer` class implements the `User` interface but doesn’t need methods like `approveProduct()`, it might throw exceptions or leave methods unimplemented, violating the **Liskov Substitution Principle (LSP)** as well.
+
+## Refactoring to Follow ISP
+
+The solution is to break down the `User` interface into smaller, role-specific interfaces, ensuring that each user type only implements the methods they require.
+
+### Refactoring Example
+
+Here’s how you can refactor the code to adhere to the Interface Segregation Principle:
+
+```java
+// Interface for users who can buy products
+public interface Buyer {
+    boolean canBuyProducts();
+    void buyProduct();
+}
+
+// Interface for users who can modify products
+public interface Modifier {
+    boolean canModifyProducts();
+    void modifyProduct();
+}
+
+// Interface for users who can add products
+public interface Adder {
+    boolean canAddProducts();
+    void addProduct();
+}
+
+// Interface for users who can approve products
+public interface Approver {
+    boolean canApproveProducts();
+    void approveProduct();
+}
+
+// Admin can do everything, so it implements all interfaces
+public class Admin implements Buyer, Modifier, Adder, Approver {
+
+    @Override
+    public boolean canBuyProducts() {
+        return true;
+    }
+
+    @Override
+    public void buyProduct() {
+        // Admin-specific implementation
+    }
+
+    @Override
+    public boolean canModifyProducts() {
+        return true;
+    }
+
+    @Override
+    public void modifyProduct() {
+        // Admin-specific implementation
+    }
+
+    @Override
+    public boolean canAddProducts() {
+        return true;
+    }
+
+    @Override
+    public void addProduct() {
+        // Admin-specific implementation
+    }
+
+    @Override
+    public boolean canApproveProducts() {
+        return true;
+    }
+
+    @Override
+    public void approveProduct() {
+        // Admin-specific implementation
+    }
+}
+
+// Buyer only implements the Buyer interface
+public class BuyerUser implements Buyer {
+
+    @Override
+    public boolean canBuyProducts() {
+        return true;
+    }
+
+    @Override
+    public void buyProduct() {
+        // Buyer-specific implementation
+    }
+}
+
+// Seller can buy, add, and modify products, but not approve
+public class SellerUser implements Buyer, Adder, Modifier {
+
+    @Override
+    public boolean canBuyProducts() {
+        return true;
+    }
+
+    @Override
+    public void buyProduct() {
+        // Seller-specific implementation
+    }
+
+    @Override
+    public boolean canModifyProducts() {
+        return true;
+    }
+
+    @Override
+    public void modifyProduct() {
+        // Seller-specific implementation
+    }
+
+    @Override
+    public boolean canAddProducts() {
+        return true;
+    }
+
+    @Override
+    public void addProduct() {
+        // Seller-specific implementation
+    }
+}
+```
+
+### Advantages of the Refactored Design:
+
+- **ISP Compliance**: Now, each class only implements the interfaces that are relevant to its role, meaning there’s no unnecessary implementation of unrelated methods.
+- **Modularity**: Each interface serves a specific purpose, leading to a more modular and flexible design.
+- **Maintainability**: The system is easier to maintain because changes in one part of the system won’t affect other unrelated parts.
+- **LSP Compliance**: By ensuring that each class only implements relevant functionality, we reduce the risk of violating the Liskov Substitution Principle as well.
+
+## Conclusion
+
+The **Interface Segregation Principle** helps to create a system where clients only need to know about the methods that are relevant to their specific needs. By splitting large interfaces into smaller, more specific ones, we achieve a more modular, maintainable, and robust design. This not only reduces unnecessary dependencies but also ensures a cleaner and more flexible architecture.
+
+
+# 5.Dependency Inversion Principle (DIP)
+
+The **Dependency Inversion Principle (DIP)** is the last of the SOLID principles in object-oriented design. It suggests that high-level modules should not depend on low-level modules but should instead depend on abstractions. This principle emphasizes reducing the coupling between components in a system by relying on abstractions (e.g., interfaces) rather than concrete implementations.
+
+## Definition
+
+Robert C. Martin, who introduced the SOLID principles, defines the Dependency Inversion Principle as:
+
+> *"High-level modules should not depend on low-level modules. Both should depend on abstractions."*
+
+> *"Abstractions should not depend on details. Details should depend on abstractions."*
+
+This means that instead of directly instantiating classes or depending on concrete classes, a class should depend on interfaces or abstract classes, allowing for more flexibility and better modularity.
+
+## Why Follow DIP?
+
+In systems that violate DIP, high-level modules (the core logic of the system) depend directly on low-level modules (specific implementations). This tight coupling makes the system rigid, harder to change, and more prone to breaking when changes occur. By following DIP, you make your code more maintainable, testable, and flexible, as dependencies can be swapped out without affecting the core logic.
+
+### Example of a Violation
+
+Consider the following example where a high-level class directly depends on a low-level implementation:
+
+```java
+public class EmailService {
+    public void sendEmail(String message) {
+        // Code to send an email
+        System.out.println("Sending email: " + message);
+    }
+}
+
+public class UserNotification {
+    private EmailService emailService;
+
+    public UserNotification() {
+        emailService = new EmailService();  // High-level module depends on low-level module
+    }
+
+    public void notifyUser() {
+        emailService.sendEmail("You've got a new message!");
+    }
+}
+```
+
+### Problems with This Design:
+
+1. **Tight Coupling**: The `UserNotification` class is tightly coupled to the `EmailService` class. If we want to change how notifications are sent (e.g., via SMS or push notifications), we must modify the `UserNotification` class, violating the **Open-Closed Principle**.
+2. **Difficult to Test**: Testing `UserNotification` in isolation is difficult because it always depends on a concrete `EmailService`. We cannot mock or replace `EmailService` with a different implementation for testing purposes.
+3. **No Flexibility**: There’s no way to easily switch from sending an email to another type of notification without changing the high-level class.
+
+## Refactoring to Follow DIP
+
+To adhere to the Dependency Inversion Principle, we can introduce an abstraction (an interface) that both the high-level `UserNotification` class and the low-level `EmailService` depend on. This way, the `UserNotification` class depends on an abstraction instead of a concrete implementation.
+
+### Refactoring Example
+
+```java
+// Define an abstraction (interface) for sending messages
+public interface MessageService {
+    void sendMessage(String message);
+}
+
+// Low-level module: Email service
+public class EmailService implements MessageService {
+    @Override
+    public void sendMessage(String message) {
+        // Code to send an email
+        System.out.println("Sending email: " + message);
+    }
+}
+
+// Low-level module: SMS service
+public class SmsService implements MessageService {
+    @Override
+    public void sendMessage(String message) {
+        // Code to send an SMS
+        System.out.println("Sending SMS: " + message);
+    }
+}
+
+// High-level module: Now depends on abstraction, not on the concrete class
+public class UserNotification {
+    private MessageService messageService;
+
+    // The service can be injected through constructor or setter
+    public UserNotification(MessageService messageService) {
+        this.messageService = messageService;
+    }
+
+    public void notifyUser() {
+        messageService.sendMessage("You've got a new message!");
+    }
+}
+```
+
+### Advantages of the Refactored Design:
+
+1. **Loose Coupling**: The `UserNotification` class no longer depends on a specific low-level implementation like `EmailService`. Instead, it depends on the `MessageService` abstraction, allowing us to swap out different message services (e.g., `EmailService`, `SmsService`) without modifying the `UserNotification` class.
+
+2. **Easier Testing**: We can easily mock the `MessageService` interface for unit testing purposes without relying on actual implementations of `EmailService` or `SmsService`.
+
+3. **Flexibility and Extensibility**: If we want to add a new notification method (e.g., push notifications), we can simply create a new class that implements the `MessageService` interface, and the `UserNotification` class remains unchanged. This adheres to the **Open-Closed Principle**.
+
+4. **Inversion of Control**: The high-level module (`UserNotification`) no longer controls which message service to use. The choice of implementation is inverted, allowing it to be injected from outside, often using dependency injection frameworks like Spring or Guice.
+
+### Example with Dependency Injection:
+
+Using a dependency injection framework, we can simplify the creation of dependencies.
+
+```java
+public class Application {
+    public static void main(String[] args) {
+        MessageService messageService = new EmailService(); // Can switch to new SmsService()
+        UserNotification notification = new UserNotification(messageService);
+        notification.notifyUser();
+    }
+}
+```
+
+## Benefits of the Dependency Inversion Principle:
+
+- **Increased Flexibility**: Systems that follow DIP are more flexible and allow for easier swapping of different implementations without modifying the core logic.
+- **Easier Maintenance**: High-level modules can be maintained and updated without worrying about changes to low-level details.
+- **Testability**: Since the system relies on abstractions, it is easier to mock or replace dependencies for testing purposes, leading to better test coverage.
+- **Reduced Coupling**: By relying on interfaces or abstractions, we reduce the dependency between modules, making the code more modular and resilient to changes.
+
+## Conclusion
+
+The **Dependency Inversion Principle** ensures that both high-level modules (business logic) and low-level modules (specific implementations) depend on abstractions rather than each other. This principle is crucial for creating systems that are flexible, maintainable, and easy to test. By following DIP, we invert the flow of control, leading to more loosely coupled and adaptable systems.
