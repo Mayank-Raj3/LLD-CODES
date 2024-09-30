@@ -136,7 +136,7 @@ public class Main {
 - **Easier Testing**: Each class can be tested independently, making unit tests simpler and more focused.
 
 
-# 2. Open/Closed Principle (OCP) 
+# 2. Open/Closed Principle (OCP)
 
 The **Open/Closed Principle (OCP)** is one of the SOLID principles of object-oriented design. It states that:
 
@@ -233,11 +233,11 @@ No changes are required in the `DiscountCalculator` class. We just use the new c
 public class Main {
     public static void main(String[] args) {
         DiscountCalculator calculator = new DiscountCalculator();
-        
+
         Customer regular = new RegularCustomer();
         Customer vip = new VipCustomer();
         Customer student = new StudentCustomer();
-        
+
         System.out.println("Regular Discount: " + calculator.calculateDiscount(regular, 100));
         System.out.println("VIP Discount: " + calculator.calculateDiscount(vip, 100));
         System.out.println("Student Discount: " + calculator.calculateDiscount(student, 100));
