@@ -1,6 +1,14 @@
 package StrategyPattern;
 
 public class VisaCreditCard extends CreditCard implements RefundCompatibleCreditCard{
+    //implementing Refund Strategy
+
+    private RefundStrategy refundStrategy;
+    public VisaCreditCard(RefundStrategy refundStrategy) {
+        this.refundStrategy = new SameInstrumentRefundStrategy();
+    }
+
+
     @Override
     public void swipeAndPay(){
         System.out.println("Swipe and Pay");
@@ -16,6 +24,7 @@ public class VisaCreditCard extends CreditCard implements RefundCompatibleCredit
 
     @Override //lsp
     public void doRefund(){
-        System.out.println("Visa Card Do Refund -> Algo 2 ");
+        this.refundStrategy.doRefund();
+//        System.out.println("Visa Card Do Refund -> Algo 2 ");
     }
 }

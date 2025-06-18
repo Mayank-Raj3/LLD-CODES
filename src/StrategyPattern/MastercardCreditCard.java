@@ -1,6 +1,13 @@
 package StrategyPattern;
 
 public class MastercardCreditCard extends CreditCard implements RefundCompatibleCreditCard{
+
+    private RefundStrategy refundStrategy;
+    MastercardCreditCard(){
+        refundStrategy = new BankRefundStrategy();
+
+    }
+
     @Override
     public void swipeAndPay(){
         System.out.println("Swipe and Pay");
@@ -15,6 +22,7 @@ public class MastercardCreditCard extends CreditCard implements RefundCompatible
     }
     @Override //lsp
     public void doRefund(){
+        refundStrategy.doRefund();
         System.out.println("Master Card Do Refund -> Algo 1 ");
     }
 }

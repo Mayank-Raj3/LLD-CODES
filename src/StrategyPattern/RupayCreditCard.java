@@ -1,6 +1,12 @@
 package StrategyPattern;
 
-public class RupayCreditCard extends CreditCard implements RefundCompatibleCreditCard{
+public class RupayCreditCard extends CreditCard implements RefundCompatibleCreditCard ,UpiCompatibleCreditCard{
+
+    RefundStrategy refundStrategy;
+    RupayCreditCard(){
+        refundStrategy =new SameInstrumentRefundStrategy() ;
+    }
+
     @Override
     public void swipeAndPay(){
         System.out.println("Swipe and Pay");
@@ -15,6 +21,12 @@ public class RupayCreditCard extends CreditCard implements RefundCompatibleCredi
     }
     @Override //lsp
     public void doRefund(){
+        refundStrategy.doRefund();
         System.out.println("Rupay Card Do Refund -> Algo 2 ");
     }
+    @Override
+    public void upiAndPay(){
+        System.out.println("Upi And Pay");
+    }
+
 }
