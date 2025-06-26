@@ -6,7 +6,6 @@ public class DoublyLinkedList<K,V> {
     public DoublyLinkedList(){
         head = new Node<>(null, null);
         tail = new Node<>(null, null);
-
         head.next = tail ;
         tail.prev = head ;
     }
