@@ -27,5 +27,6 @@ public class Main {
 /*
 * Why it's important to Make Interface Prototype
 *
+*   To force the one to implement clone method so it doesnot forger to im[plement it
 *
 * */
